@@ -4,14 +4,6 @@ let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
 
-// Fungsi pembantu untuk mengecek apakah user sudah terdaftar
-const isValid = (username) => {
-  let userswithsamename = users.filter((user) => {
-    return user.username === username;
-  });
-  return userswithsamename.length > 0;
-};
-
 public_users.post("/register", (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
@@ -31,17 +23,23 @@ public_users.post("/register", (req, res) => {
 
 // Lokasi: router/general.js
 // Lokasi: router/general.js
+// Task 10: Mendapatkan daftar buku menggunakan Promise/Async-Await
 public_users.get('/', async function (req, res) {
-    try {
-      // Simulasi pengambilan data asinkron
-      const response = await axios.get("http://localhost:5000/"); // Mengarah ke rute internal atau endpoint data
-      res.status(200).json(books);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching book list" });
-    }
-  });
+  try {
+    // Kita buat fungsi asinkron sederhana untuk mengambil data lokal
+    const getBooks = () => {
+      return new Promise((resolve) => {
+        resolve(books);
+      });
+    };
 
-// Lokasi: router/general.js
+    const bookList = await getBooks();
+    res.status(200).send(JSON.stringify(bookList, null, 4));
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching book list" });
+  }
+});
+
 public_users.get('/isbn/:isbn', function (req, res) {
     const getBook = new Promise((resolve, reject) => {
       const isbn = req.params.isbn;
