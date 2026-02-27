@@ -38,23 +38,19 @@ public_users.get('/', async function (req, res) {
   } catch (error) {
     res.status(500).json({ message: "Error fetching book list" });
   }
-});
+});asi: router/general.js
 
 public_users.get('/isbn/:isbn', function (req, res) {
-    const getBook = new Promise((resolve, reject) => {
-      const isbn = req.params.isbn;
-      if (books[isbn]) {
-        resolve(books[isbn]);
-      } else {
-        reject("Book not found");
-      }
-    });
-  
-    getBook
-      .then((book) => res.status(200).json(book))
-      .catch((err) => res.status(404).json({ message: err }));
-  });
-  
+    const isbn = req.params.isbn;
+    // Menggunakan Promise sesuai instruksi Task 11
+    new Promise((resolve, reject) => {
+        const book = books[isbn];
+        if(book) resolve(book);
+        else reject("Book not found");
+    })
+    .then(book => res.status(200).send(JSON.stringify(book, null, 4)))
+    .catch(err => res.status(404).json({message: err}));
+});
 // Lokasi: router/general.js
 public_users.get('/author/:author', async function (req, res) {
     const author = req.params.author;
